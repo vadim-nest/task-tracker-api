@@ -35,4 +35,17 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+router.put("/:id", async (req, res, next) => {
+  try {
+    const v = validateTask(req.body);
+    if (!v.ok)
+      return res.status(400).json({ error: "Validation", details: v.errors });
+    const updated = await repo.update(req.params.id, req.body);
+    if (!updated) return res.status(404).json({ error: "Not found" });
+    res.json({ data: updated });
+  } catch (e) {
+    next(e);
+  }
+});
+
 module.exports = router;
