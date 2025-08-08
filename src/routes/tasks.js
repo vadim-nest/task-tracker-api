@@ -48,4 +48,32 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 
+router.patch("/:id/status", async (req, res, next) => {
+  try {
+    const allowed = ["todo", "in_progress", "done"];
+    if (!allowed.includes(req.body?.status)) {
+      return res
+        .status(400)
+        .json({
+          error: "Validation",
+          details: [{ path: "status", message: "Invalid status" }],
+        });
+    }
+    const updated = await repo.updateStatus(req.params.id, req.body.status);
+    if (!updated) return res.status(404).json({ error: "Not found" });
+    res.json({ data: updated });
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.delete("/:id", async (req, res, next) => {
+  try {
+    await repo.remove(req.params.id);
+    res.status(204).send();
+  } catch (e) {
+    next(e);
+  }
+});
+
 module.exports = router;
