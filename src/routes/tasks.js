@@ -13,6 +13,16 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+router.get("/:id", async (req, res, next) => {
+  try {
+    const item = await repo.get(req.params.id);
+    if (!item) return res.status(404).json({ error: "Not found" });
+    res.json({ data: item });
+  } catch (e) {
+    next(e);
+  }
+});
+
 router.post("/", async (req, res, next) => {
   try {
     const v = validateTask(req.body);
